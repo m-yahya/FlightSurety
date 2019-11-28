@@ -42,6 +42,9 @@ contract FlightSuretyData {
         contractOwner = msg.sender;
         // register first airline for contract owner
         airlines[msg.sender] = Airline('First Airline', true);
+        // add airline to airlines list
+        registeredAirlines.push(msg.sender);
+        // emit airline registration event
         emit NewAirline(msg.sender, 'First Airline', true);
     }
 
