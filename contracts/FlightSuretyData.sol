@@ -12,10 +12,23 @@ contract FlightSuretyData {
     address private contractOwner;                                      // Account used to deploy contract
     bool private operational = true;                                    // Blocks all state changes throughout the contract if false
 
+    // Airline structure
+    struct Airline{
+        string name;
+        bool isRegistered;
+    }
+
+    // Keep record of registered airlines
+    address[] private registeredAirlines;
+
+    // mapping airlines
+    mapping (address => Airline) private airlines;
+
     /********************************************************************************************/
     /*                                       EVENT DEFINITIONS                                  */
     /********************************************************************************************/
-
+    // event fired when a new airline is registered
+    event NewAirline(address airlineAddress, string name, bool status);
 
     /**
     * @dev Constructor
@@ -27,6 +40,9 @@ contract FlightSuretyData {
                                 public 
     {
         contractOwner = msg.sender;
+        // register first airline for contract owner
+        airlines[msg.sender] = Airline('First Airline', true);
+        emit NewAirline(msg.sender, 'First Airline', true);
     }
 
     /********************************************************************************************/
