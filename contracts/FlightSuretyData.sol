@@ -264,29 +264,6 @@ contract FlightSuretyData {
         return (0);
     }
 
-    /**
-     *  @dev Credits payouts to insurees
-    */
-    function creditInsurees
-                                (
-                                )
-                                external
-                                pure
-    {
-    }
-
-    /**
-     *  @dev Transfers eligible payout funds to insuree
-     *
-    */
-    function pay
-                            (
-                            )
-                            external
-                            pure
-    {
-    }
-
    /**
     * @dev Initial funding for the insurance. Unless there are too many delayed flights
     *      resulting in insurance payouts, the contract should be self-sustaining
@@ -294,10 +271,14 @@ contract FlightSuretyData {
     */
     function fund
                             (
+        uint256 fundAmount, address sender
                             )
                             public
                             payable
+    requireIsOperational
     {
+        airlines[sender].funds = airlines[sender].funds.add(fundAmount);
+        contractBalance = contractBalance.add(fundAmount);
     }
 
     function getFlightKey
@@ -306,9 +287,9 @@ contract FlightSuretyData {
                             string memory flight,
                             uint256 timestamp
                         )
+    internal
                         pure
-                        internal
-                        returns(bytes32)
+    returns (bytes32)
     {
         return keccak256(abi.encodePacked(airline, flight, timestamp));
     }
