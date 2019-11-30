@@ -16,6 +16,7 @@ contract FlightSuretyData {
     // Airline structure
     struct Airline{
         string name;
+        uint256 funds;
         bool isRegistered;
     }
 
@@ -29,7 +30,7 @@ contract FlightSuretyData {
     /*                                       EVENT DEFINITIONS                                  */
     /********************************************************************************************/
     // event fired when a new airline is registered
-    event NewAirline(address airlineAddress, string name, bool status);
+    event NewAirline(address airlineAddress, string name, uint256 funds, bool status);
 
     /**
     * @dev Constructor
@@ -42,11 +43,11 @@ contract FlightSuretyData {
     {
         contractOwner = msg.sender;
         // register first airline for contract owner
-        airlines[msg.sender] = Airline('First Airline', true);
+        airlines[msg.sender] = Airline('First Airline', 0, true);
         // add airline to airlines list
         registeredAirlines.push(msg.sender);
         // emit airline registration event
-        emit NewAirline(msg.sender, 'First Airline', true);
+        emit NewAirline(msg.sender, 'First Airline', 0, true);
     }
 
     /********************************************************************************************/
@@ -127,15 +128,16 @@ contract FlightSuretyData {
                             external
                             requireIsOperational
     {
-        airlines[airlineAddress] = Airline(name, true);
+        airlines[airlineAddress] = Airline(name, 0, true);
         registeredAirlines.push(airlineAddress);
-        emit NewAirline (airlineAddress, name, true);
+        emit NewAirline (airlineAddress, name, 0, true);
     }
     // get airline
-    function getAirline (address airlineAddress) public view returns(string memory name, bool isRegistered){
+    function getAirline (address airlineAddress) public view returns(string memory name, uint256 funds, bool isRegistered){
         name = airlines[airlineAddress].name;
+        funds = airlines[airlineAddress].funds;
         isRegistered = airlines[airlineAddress].isRegistered;
-        return (name, isRegistered);
+        return (name, funds, isRegistered);
     }
     // check if airline registration
     function isAirlineRegistered(address airline) external view requireIsOperational returns(bool status){
@@ -144,6 +146,10 @@ contract FlightSuretyData {
     // get total number of airlines
     function getToalAirlines()external view requireIsOperational returns(uint256 number){
         return registeredAirlines.length;
+    }
+    // check if airline is funded
+    function isAirlineFunded(address airline) public view requireIsOperational returns(bool status){
+        return airlines[airline].funds >= AIRLINE_REGISTRATION_FEE;
     }
 
    /**
