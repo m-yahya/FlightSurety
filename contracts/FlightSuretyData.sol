@@ -14,7 +14,7 @@ contract FlightSuretyData {
     uint256 private contractBalance = 0 ether;
 
     // Airline structure
-    struct Airline{
+    struct Airline {
         string name;
         uint256 funds;
         bool isRegistered;
@@ -24,7 +24,7 @@ contract FlightSuretyData {
     address[] public registeredAirlines;
 
     // mapping airlines
-    mapping (address => Airline) public airlines;
+    mapping(address => Airline) public airlines;
 
     /********************************************************************************************/
     /*                                       EVENT DEFINITIONS                                  */
@@ -65,7 +65,8 @@ contract FlightSuretyData {
     modifier requireIsOperational()
     {
         require(operational, "Contract is currently not operational");
-        _;  // All modifiers require an "_" which indicates where the function body will be added
+        _;
+        // All modifiers require an "_" which indicates where the function body will be added
     }
 
     /**
@@ -89,7 +90,7 @@ contract FlightSuretyData {
     function isOperational()
                             public
                             view
-                            returns(bool)
+    returns (bool)
     {
         return operational;
     }
@@ -130,21 +131,21 @@ contract FlightSuretyData {
     {
         airlines[airlineAddress] = Airline(name, 0, true);
         registeredAirlines.push(airlineAddress);
-        emit NewAirline (airlineAddress, name, 0, true);
+        emit NewAirline(airlineAddress, name, 0, true);
     }
     // get airline
-    function getAirline (address airlineAddress) public view returns(string memory name, uint256 funds, bool isRegistered){
+    function getAirline(address airlineAddress) public view returns (string memory name, uint256 funds, bool isRegistered){
         name = airlines[airlineAddress].name;
         funds = airlines[airlineAddress].funds;
         isRegistered = airlines[airlineAddress].isRegistered;
         return (name, funds, isRegistered);
     }
     // check if airline registration
-    function isAirlineRegistered(address airline) external view requireIsOperational returns(bool status){
+    function isAirlineRegistered(address airline) external view requireIsOperational returns (bool status){
         return airlines[airline].isRegistered;
     }
     // get total number of airlines
-    function getToalAirlines()external view requireIsOperational returns(uint256 number){
+    function getToalAirlines() external view requireIsOperational returns (uint256 number){
         return registeredAirlines.length;
     }
     // check if airline is funded
