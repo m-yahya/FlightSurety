@@ -53,9 +53,9 @@ contract FlightSuretyData {
     *      The deploying account becomes contractOwner
     */
     constructor
-                                (
-                                )
-                                public
+    (
+    )
+    public
     {
         contractOwner = msg.sender;
         // register first airline for contract owner
@@ -104,8 +104,8 @@ contract FlightSuretyData {
     * @return A bool that is the current operating status
     */
     function isOperational()
-                            public
-                            view
+    public
+    view
     returns (bool)
     {
         return operational;
@@ -118,11 +118,11 @@ contract FlightSuretyData {
     * When operational mode is disabled, all write transactions except for this one will fail
     */
     function setOperatingStatus
-                            (
-                                bool mode
-                            )
-                            external
-                            requireContractOwner
+    (
+        bool mode
+    )
+    external
+    requireContractOwner
     {
         operational = mode;
     }
@@ -133,17 +133,17 @@ contract FlightSuretyData {
 
     // Airline resources
 
-   /**
-    * @dev Add an airline to the registration queue
-    *      Can only be called from FlightSuretyApp contract
-    *
-    */
+    /**
+     * @dev Add an airline to the registration queue
+     *      Can only be called from FlightSuretyApp contract
+     *
+     */
     function registerAirline
-                            (
-                            address airlineAddress, string calldata name
-                            )
-                            external
-                            requireIsOperational
+    (
+        address airlineAddress, string calldata name
+    )
+    external
+    requireIsOperational
     {
         airlines[airlineAddress] = Airline(name, 0, true);
         registeredAirlines.push(airlineAddress);
@@ -177,14 +177,14 @@ contract FlightSuretyData {
 
     // flight resources
 
-   /**
-    * @dev Buy insurance for a flight
-    *
-    */
+    /**
+     * @dev Buy insurance for a flight
+     *
+     */
     function buy
-                            (
+    (
         string memory flight, uint256 time, address passenger, address sender, uint256 amount
-                            )
+    )
     public requireIsOperational
     {
         string[] memory flights = new string[](5);
@@ -213,7 +213,7 @@ contract FlightSuretyData {
                 insurancePaid : insurance,
                 flights : flight
                 });
-    }
+        }
 
         // add insurance to contractBalance
         contractBalance = contractBalance.add(amount);
@@ -264,17 +264,17 @@ contract FlightSuretyData {
         return (0);
     }
 
-   /**
-    * @dev Initial funding for the insurance. Unless there are too many delayed flights
-    *      resulting in insurance payouts, the contract should be self-sustaining
-    *
-    */
+    /**
+     * @dev Initial funding for the insurance. Unless there are too many delayed flights
+     *      resulting in insurance payouts, the contract should be self-sustaining
+     *
+     */
     function fund
-                            (
+    (
         uint256 fundAmount, address sender
-                            )
-                            public
-                            payable
+    )
+    public
+    payable
     requireIsOperational
     {
         airlines[sender].funds = airlines[sender].funds.add(fundAmount);
@@ -282,13 +282,13 @@ contract FlightSuretyData {
     }
 
     function getFlightKey
-                        (
-                            address airline,
-                            string memory flight,
-                            uint256 timestamp
-                        )
+    (
+        address airline,
+        string memory flight,
+        uint256 timestamp
+    )
     internal
-                        pure
+    pure
     returns (bytes32)
     {
         return keccak256(abi.encodePacked(airline, flight, timestamp));
@@ -299,10 +299,10 @@ contract FlightSuretyData {
     *
     */
     function()
-                            external
-                            payable
+    external
+    payable
     {
-        fund();
+        contractBalance = contractBalance.add(msg.value);
     }
 
 
