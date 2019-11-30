@@ -28,6 +28,11 @@ contract FlightSuretyApp {
 
     address private contractOwner;          // Account used to deploy contract
 
+    // consensus for new airline registration
+    uint8 private constant AIRLINE_REGISTRATION_CONSENSUS = 4;
+    // maximum insurance amount
+    uint256 public constant MAX_INSURANCE = 1 ether;
+
     struct Flight {
         bool isRegistered;
         uint8 statusCode;
