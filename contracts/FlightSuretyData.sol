@@ -20,12 +20,21 @@ contract FlightSuretyData {
         uint256 funds;
         bool isRegistered;
     }
+    // Passenger structure
+    struct Passenger {
+        bool isInsured;
+        bool[] isPaid;
+        uint256[] insurancePaid;
+        string[] flights;
+    }
 
     // Keep record of registered airlines
     address[] public registeredAirlines;
 
     // mapping airlines
     mapping(address => Airline) public airlines;
+    // mapping passengers
+    mapping(address => Passenger) public passengers;
 
     /********************************************************************************************/
     /*                                       EVENT DEFINITIONS                                  */
