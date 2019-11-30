@@ -11,7 +11,7 @@ contract FlightSuretyData {
 
     address private contractOwner;                                      // Account used to deploy contract
     bool private operational = true;                                    // Blocks all state changes throughout the contract if false
-    uint256 public constant AIRLINE_REGISTRATION_FEE=10 ether;
+    uint256 private contractBalance = 0 ether;
 
     // Airline structure
     struct Airline{
@@ -152,6 +152,11 @@ contract FlightSuretyData {
         return airlines[airline].funds >= AIRLINE_REGISTRATION_FEE;
     }
 
+    // contract resources
+    // get contract balance
+    function getContractBalance() external view requireIsOperational returns (uint256 balance){
+        return contractBalance;
+    }
    /**
     * @dev Buy insurance for a flight
     *
