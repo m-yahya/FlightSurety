@@ -35,6 +35,12 @@ contract FlightSuretyData {
     mapping(address => Airline) public airlines;
     // mapping passengers
     mapping(address => Passenger) public passengers;
+    // mapping passengers insured for a flight
+    mapping(string => address[]) private flightPassengers;
+    // mapping passenger insurance payouts
+    mapping(address => uint256) private insurancePayouts;
+    // keep record of total flight insurance
+    mapping(string => uint256) private flightTotalInsurance;
 
     /********************************************************************************************/
     /*                                       EVENT DEFINITIONS                                  */
@@ -168,17 +174,94 @@ contract FlightSuretyData {
     function getContractBalance() external view requireIsOperational returns (uint256 balance){
         return contractBalance;
     }
+
+    // flight resources
+
    /**
     * @dev Buy insurance for a flight
     *
     */
     function buy
                             (
+        string memory flight, uint256 time, address passenger, address sender, uint256 amount
                             )
-                            external
-                            payable
+    public requireIsOperational
     {
+        string[] memory flights = new string[](5);
+        bool[] memory paid = new bool[](5);
+        uint256[] memory insurance = new uint256[](5);
+        uint index;
 
+        // check if passenger is insured
+        if (passengers[passenger].isInsured) {
+            index = getFlightIndex(passenger, flight);
+            // check if passenger already has insurance for the flight
+            require(index == 0, 'Flight is already insured');
+
+            passengers[passenger].isPaid.push(false);
+            passengers[passenger].insurancePaid.push(amount);
+            passengers[passenger].flights.push(flight);
+        } else {
+            // buy insurance
+            paid[0] = false;
+            insurance[0] = amount;
+            flights[0] = flight;
+
+            passengers[passenger] = Passenger({
+                isInsured : true,
+                isPaid : paid,
+                insurancePaid : insurance,
+                flights : flight
+                });
+    }
+
+        // add insurance to contractBalance
+        contractBalance = contractBalance.add(amount);
+        // add passengers to flight
+        flightPassengers[flight].push(passenger);
+        // add to total flight insurance
+        flightTotalInsurance[flight] = flightTotalInsurance[flight].add(amount);
+    }
+
+    // get passengers insured for a flight
+    function getPassengersInsured(string calldata flight) external requireIsOperational returns (address[] passengers){
+        return flightPassengers[flight];
+    }
+    // get insurence amount
+    function getInsuranceAmount(string calldata flight, address passenger) external requireIsOperational returns (uint amount){
+        amount = 0;
+        uint index = getFlightIndex(passenger, flight) - 1;
+        // check if passenger is paid
+        if (!passengers[passenger].isPaid) {
+            amount = passengers[passenger].insurancePaid[index];
+        }
+        return amount;
+    }
+    // set insurance amount
+    function setInsurance(string calldata flight, address passenger, uint amount) external requireIsOperational {
+        uint index = getFlightIndex(passenger, flight) - 1;
+        passengers[passenger].isPaid[index] = true;
+        insurancePayouts[passenger] = insurancePayouts[passenger].add(amount);
+    }
+    // withdraw insurance
+    function withdraw(address payee) external payable requireIsOperational {
+        require(insurancePayouts[payee] > 0, 'Payout is required');
+        uint amount = insurancePayouts[payee];
+        insurancePayouts[payee] = 0;
+        contractBalance = contractBalance.sub(amount);
+        payee.transfer(amount);
+    }
+
+    // get flight index
+    function getFlightIndex(address passenger, string memory flight) public view returns (uint index){
+        string[] memory flights = new string[](5);
+        flights = passengers[passenger].flights;
+        for (uint i = 0; i < flights.length; i++) {
+            if (uint(keccak256(abi.encodePacked(flights[index]))) == uint(keccak256(abi.encodePacked(flight)))) {
+                return (i + 1);
+            }
+        }
+        return (0);
     }
 
     /**
