@@ -119,11 +119,38 @@ return flightSuretyData.isOperational();
  */
 function registerAirline
 (
+address airline
 )
 external
-pure
+requireIsOperational
 returns (bool success, uint256 votes)
 {
+// check if airline is registered
+bool isRegistered = flightSuretyData.isAirlineRegistered(msg.sender);
+require(isRegistered, 'Airline is not registered');
+//  get total number of registered airlines
+uint totalAirlines = flightSuretyData.getToalAirlines();
+// apply consensus
+if (totalAirlines >= AIRLINE_REGISTRATION_CONSENSUS) {
+bool isDuplicate = false;
+for (uint index = 0; index < flightSuretyData.multiCallsLength(); index++) {
+if (flightSuretyData.getMultiCallsItem(index) == msg.sender) {
+isDuplicate = true;
+break;
+}
+}
+require(!isDuplicate, 'Caller can only vote once');
+flightSuretyData.addMultiCallsItem(msg.sender);
+
+// apply 50% consensus
+if (flightSuretyData.multiCallsLength() >= totalAirlines.div(2)) {
+filghtSuretyData.clearMultiCalls();
+flightSuretyData.registerAirline(airline);
+} else {
+flightSuretyData.registerAirline(airline);
+}
+
+}
 return (success, 0);
 }
 
