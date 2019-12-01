@@ -14,6 +14,8 @@ contract FlightSuretyData {
     uint256 public constant AIRLINE_REGISTRATION_FEE = 10 ether;
     uint256 private contractBalance = 0 ether;
 
+    address[] public multiCalls = new address[](0);
+
     // Airline structure
     struct Airline {
         string name;
@@ -125,6 +127,23 @@ contract FlightSuretyData {
     requireContractOwner
     {
         operational = mode;
+    }
+
+    // Multiparty Consensus utility functions
+    function multiCallsLength() external returns (uint){
+        return multiCalls.length;
+    }
+
+    function getMultiCallsItem(uint index) external returns (address){
+        return multiCalls[index];
+    }
+
+    function addMultiCallsItem(address voter) external {
+        multiCalls.push(voter);
+    }
+
+    function clearMultiCalls() external {
+        multiCalls = new address[](0);
     }
 
     /********************************************************************************************/
