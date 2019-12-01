@@ -154,6 +154,14 @@ flightSuretyData.registerAirline(airline);
 return (success, 0);
 }
 
+// fund airline
+function fundAirline(address airline) external payable requireIsOperational{
+    flightSuretyData.fund(mas.value, airline);
+}
+
+function getAirlineFunds(address airline)external returns(uint256 funds) {
+    return flightSuretyData.getAirlineFunds(airline);
+}
 
 /**
  * @dev Register a future flight for insuring.
