@@ -130,11 +130,11 @@ contract FlightSuretyData {
     }
 
     // Multiparty Consensus utility functions
-    function multiCallsLength() external returns (uint){
+    function multiCallsLength() external view returns (uint){
         return multiCalls.length;
     }
 
-    function getMultiCallsItem(uint index) external returns (address){
+    function getMultiCallsItem(uint index) external view returns (address){
         return multiCalls[index];
     }
 
@@ -159,7 +159,7 @@ contract FlightSuretyData {
      */
     function registerAirline
     (
-        address airlineAddress, string calldata name
+        address airlineAddress, string name
     )
     external
     requireIsOperational
@@ -206,7 +206,7 @@ contract FlightSuretyData {
      */
     function buy
     (
-        string memory flight, uint256 time, address passenger, address sender, uint256 amount
+        string memory flight, address passenger, uint256 amount
     )
     public requireIsOperational
     {
@@ -234,7 +234,7 @@ contract FlightSuretyData {
                 isInsured : true,
                 isPaid : paid,
                 insurancePaid : insurance,
-                flights : flight
+                flights : flights
                 });
         }
 
@@ -247,7 +247,7 @@ contract FlightSuretyData {
     }
 
     // get passengers insured for a flight
-    function getPassengersInsured(string calldata flight) external requireIsOperational returns (address[] passengers){
+    function getPassengersInsured(string flight) external view requireIsOperational returns (address[] passengersInsured){
         return flightPassengers[flight];
     }
     // get passenger credits
@@ -255,17 +255,17 @@ contract FlightSuretyData {
         return insurancePayouts[passenger];
     }
     // get insurence amount
-    function getInsuranceAmount(string calldata flight, address passenger) external requireIsOperational returns (uint amount){
+    function getInsuranceAmount(string flight, address passenger) external view requireIsOperational returns (uint amount){
         amount = 0;
         uint index = getFlightIndex(passenger, flight) - 1;
         // check if passenger is paid
-        if (!passengers[passenger].isPaid) {
+        if (passengers[passenger].isPaid[index] == false) {
             amount = passengers[passenger].insurancePaid[index];
         }
         return amount;
     }
     // set insurance amount
-    function setInsurance(string calldata flight, address passenger, uint amount) external requireIsOperational {
+    function setInsurance(string flight, address passenger, uint amount) external requireIsOperational {
         uint index = getFlightIndex(passenger, flight) - 1;
         passengers[passenger].isPaid[index] = true;
         insurancePayouts[passenger] = insurancePayouts[passenger].add(amount);
@@ -311,11 +311,12 @@ contract FlightSuretyData {
     function getFlightKey
     (
         address airline,
-        string memory flight,
+        string flight,
         uint256 timestamp
     )
-    internal
-    pure
+    external
+    view
+    requireIsOperational
     returns (bytes32)
     {
         return keccak256(abi.encodePacked(airline, flight, timestamp));
