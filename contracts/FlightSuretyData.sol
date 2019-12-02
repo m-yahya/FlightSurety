@@ -187,6 +187,10 @@ contract FlightSuretyData {
     function isAirlineFunded(address airline) public view requireIsOperational returns (bool status){
         return airlines[airline].funds >= AIRLINE_REGISTRATION_FEE;
     }
+    // get airline funds
+    function getAirlineFunds(address airline) external view requireIsOperational returns (uint256 fund){
+        return airlines[airline].funds;
+    }
 
     // contract resources
     // get contract balance
