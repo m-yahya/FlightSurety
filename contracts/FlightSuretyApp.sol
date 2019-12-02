@@ -216,16 +216,16 @@ flightSuretyData.setInsurance(flight, passenger, amount);
 
 // buy insurance
 function buyPassengerInsurance(string flight, unit256 time, address airline, address passenger)external payable requireIsOperational {
-    require(msg.value <= MAX_INSURANCE, 'Passenger need to pay upto 1 ether');
-    flightSuretyData.buy(flight, time, passenger, msg.sender, msg.value);
+require(msg.value <= MAX_INSURANCE, 'Passenger need to pay upto 1 ether');
+flightSuretyData.buy(flight, time, passenger, msg.sender, msg.value);
 }
 // get passenger credits
 function getPassengerCredits(address passenger)external view requireIsOperational returns(uint256 credit) {
-    return flightSuretyData.getPassengerCredits(passenger);
+return flightSuretyData.getPassengerCredits(passenger);
 }
 // withdraw payouts
 function withdrawPayout()external {
-    flightSuretyData.withdraw(msg.sender);
+flightSuretyData.withdraw(msg.sender);
 }
 
 
