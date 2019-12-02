@@ -156,11 +156,11 @@ return (success, 0);
 
 // fund airline
 function fundAirline(address airline) external payable requireIsOperational{
-    flightSuretyData.fund(mas.value, airline);
+flightSuretyData.fund(mas.value, airline);
 }
 
-function getAirlineFunds(address airline)external returns(uint256 funds) {
-    return flightSuretyData.getAirlineFunds(airline);
+function getAirlineFunds(address airline)external returns (uint256 funds) {
+return flightSuretyData.getAirlineFunds(airline);
 }
 
 /**
@@ -198,8 +198,20 @@ uint256 timestamp,
 uint8 statusCode
 )
 internal
-pure
+requireIsOperational
 {
+require(statusCode == STATUS_CODE_LATE_AIRLINE, 'Only late airlines can be processed');
+address[] memory passengers = flightSuretyData.getPassengersInsured(flight);
+uint amount = 0;
+address passenger;
+uint index;
+
+for (uint index = 0; index < passengers.length; index++) {
+passenger = passengers[index];
+amount = flightSuretyData.getInsuranceAmount(flight, passenger);
+amount = amount.mul(15).div(10);
+flightSuretyData.setInsurance(flight, passenger, amount);
+}
 }
 
 
