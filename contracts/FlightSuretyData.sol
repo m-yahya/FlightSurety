@@ -250,6 +250,10 @@ contract FlightSuretyData {
     function getPassengersInsured(string calldata flight) external requireIsOperational returns (address[] passengers){
         return flightPassengers[flight];
     }
+    // get passenger credits
+    function getPassengerCredits(address passenger) external view requireIsOperational returns (uint256 credit) {
+        return insurancePayouts[passenger];
+    }
     // get insurence amount
     function getInsuranceAmount(string calldata flight, address passenger) external requireIsOperational returns (uint amount){
         amount = 0;
