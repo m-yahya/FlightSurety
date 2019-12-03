@@ -96,6 +96,26 @@ export default class Contract {
             });
     }
 
+    // buy insurance
+    async buy(flight, amount, callback) {
+        let self = this;
+        let amountToSend = self.web3.utils.toWei(amount, "ether").toString();
+
+        let tempFlight;
+        for (const item of self.flights) {
+            if (item.flightNumber === flight) {
+                tempFlight = item;
+                break;
+            }
+        }
+
+        await self.flightSuretyApp.methods
+            .buyPassengerInsurance(tempFlight.flightNumber, tempFlight.time, tempFlight.airline, self.passengers[0])
+            .send({ from: self.passengers[0], value: amountToSend, gas: 3000000 }, (error, result) => {
+                callback(error, result);
+            });
+    }
+
 }
 
 
