@@ -4,10 +4,9 @@ import Contract from './contract';
 import './flightsurety.css';
 
 
-(async() => {
+(async () => {
 
     let result = null;
-
     let contract = new Contract('localhost', () => {
 
         // Read transaction
@@ -18,22 +17,76 @@ import './flightsurety.css';
                 value: result
             }]);
         });
-    
 
-        // User-submitted transaction
-        DOM.elid('submit-oracle').addEventListener('click', () => {
-            let flight = DOM.elid('flight-number').value;
-            // Write transaction
-            contract.fetchFlightStatus(flight, (error, result) => {
-                display('Oracles', 'Trigger oracles', [ { label: 'Fetch Flight Status', error: error, value: result.flight + ' ' + result.timestamp} ]);
-            });
-        })
-    
+        populateSelect("flights", contract.flights, 2);
+        flightChange('flights', 2, contract.flights);
+
+        DOM.elid('flights2').addEventListener('change', () => {
+            flightChange('flights', 2, contract.flights);
+        });
+
+        DOM.elid('buy').addEventListener('click', () => {
+            let flight = DOM.elid('flights2').value;
+            let amount = DOM.elid('insurance-amount').value;
+            if (amount !== "" || amount === 0) {
+                contract.buy(flight, amount, (error, result) => {
+                    if (!error) {
+                        alert(`Passenger is insured on : ${flight}`);
+                        console.log(result);
+                    }
+                });
+            } else {
+                alert("Insurance Amount is required and should be a number greater than zero.");
+            }
+        });
+
     });
-    
 
 })();
 
+function populateSelect(type, selectOpts, el) {
+    let select = DOM.elid(type + el);
+    selectOpts.forEach(opt => {
+        if (type === 'airline') {
+            select.appendChild(DOM.option({ value: opt.address }, opt.name));
+        } else if (type === 'flights') {
+            select.appendChild(DOM.option({ value: opt.flightNumber }, opt.flightNumber));
+        }
+    });
+}
+
+function flightChange(el, n, flights) {
+    el = el + n;
+    let flight = DOM.elid(el).value;
+    let flightArray = [];
+
+    for (let i = 0; i < flights.length; i++) {
+        if (flights[i].flightNumber === flight) {
+            flightArray.push(flights[i]);
+            break;
+        }
+    }
+    let num = el.charAt(el.length - 1);
+    if (n > 1)
+        displayFlightInfo(num, flightArray);
+}
+
+function displayFlightInfo(num, flight) {
+    let divname = "flightInfo" + num;
+    let displayDiv = DOM.elid(divname);
+    displayDiv.innerHTML = "";
+    let section = DOM.section();
+
+    let line1 = `Airline:  ${flight[0].airline} Departs time: ${flight[0].time}`;
+    let line2 = `Departure From: ${flight[0].origin}`;
+    let line3 = `Destination: ${flight[0].destination}`;
+
+    section.appendChild(DOM.div({ className: 'col-sm-6 field' }, line1));
+    section.appendChild(DOM.div({ className: 'col-sm-6 field' }, line2));
+    section.appendChild(DOM.div({ className: 'col-sm-6 field' }, line3));
+    
+    displayDiv.append(section);
+}
 
 function display(title, description, results) {
     let displayDiv = DOM.elid("display-wrapper");
