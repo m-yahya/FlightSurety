@@ -12,8 +12,11 @@ import './flightsurety.css';
 
         // Read transaction
         contract.isOperational((error, result) => {
-            console.log(error,result);
-            display('Operational Status', 'Check if contract is operational', [ { label: 'Operational Status', error: error, value: result} ]);
+            display('Operational Status', 'Check if contract is operational', [{
+                label: 'Operational Status',
+                error: error,
+                value: result
+            }]);
         });
     
 
@@ -38,11 +41,11 @@ function display(title, description, results) {
     section.appendChild(DOM.h2(title));
     section.appendChild(DOM.h5(description));
     results.map((result) => {
-        let row = section.appendChild(DOM.div({className:'row'}));
-        row.appendChild(DOM.div({className: 'col-sm-4 field'}, result.label));
-        row.appendChild(DOM.div({className: 'col-sm-8 field-value'}, result.error ? String(result.error) : String(result.value)));
+        let row = section.appendChild(DOM.div({ className: 'row' }));
+        row.appendChild(DOM.div({ className: 'col-sm-4 field' }, result.label));
+        row.appendChild(DOM.div({ className: 'col-sm-8 field-value' }, result.error ? String(result.error) : String(result.value)));
         section.appendChild(row);
-    })
+    });
     displayDiv.append(section);
 
 }
