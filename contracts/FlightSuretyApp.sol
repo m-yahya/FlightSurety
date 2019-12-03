@@ -146,10 +146,10 @@ contract FlightSuretyApp {
             if (flightSuretyData.multiCallsLength() >= totalAirlines.div(2)) {
                 flightSuretyData.clearMultiCalls();
                 flightSuretyData.registerAirline(airline, name);
-            } else {
-                flightSuretyData.registerAirline(airline, name);
             }
 
+        } else {
+            flightSuretyData.registerAirline(airline, name);
         }
         return (success, 0);
     }
