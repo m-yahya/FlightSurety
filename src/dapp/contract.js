@@ -29,7 +29,7 @@ export default class Contract {
             this.registerAirlines(accts)
 
             // register flights
-            //Flight
+            // Flight
             for (let i = 0; i < 5; i++) {
                 let time = Math.floor((Date.now() + (3600 * 1 + i)) / 1000);
                 this.flights.push({
@@ -108,9 +108,8 @@ export default class Contract {
                 break;
             }
         }
-
         await self.flightSuretyApp.methods
-            .buyPassengerInsurance(tempFlight.flightNumber, tempFlight.time, tempFlight.airline, self.passengers[0])
+            .buyPassengerInsurance(tempFlight.flightNumber, self.passengers[0])
             .send({ from: self.passengers[0], value: amountToSend, gas: 3000000 }, (error, result) => {
                 callback(error, result);
             });
