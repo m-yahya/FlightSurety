@@ -77,8 +77,15 @@ export default class Contract {
 
     fetchFlightStatus(flight, callback) {
         let self = this;
+        let airline;
+        for (const item of self.flights) {
+            if (item.flightNumber === flight) {
+                airline = item.airline;
+                break;
+            }
+        }
         let payload = {
-            airline: self.airlines[0],
+            airline: airline,
             flight: flight,
             timestamp: Math.floor(Date.now() / 1000)
         }
