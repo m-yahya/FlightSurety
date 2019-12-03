@@ -12,6 +12,7 @@ export default class Contract {
         this.owner = null;
         this.airlines = [];
         this.passengers = [];
+        this.flights = [];
     }
 
     initialize(callback) {
@@ -26,6 +27,21 @@ export default class Contract {
                 this.airlines.push({ address: accts[i], name: `Airline ${i}`, funds: 0 })
             }
             this.registerAirlines(accts)
+
+            // register flights
+            //Flight
+            for (let i = 0; i < 5; i++) {
+                let time = Math.floor((Date.now() + (3600 * 1 + i)) / 1000);
+                this.flights.push({
+                    airline: accts[i],
+                    airlineName: `Airline ${i}`,
+                    flightNumber: `Flight ${i}`,
+                    time: time,
+                    origin: `Origin ${i}`,
+                    destination: `Destination ${i}`,
+                });
+            }
+            this.registerFlights();
 
             while (this.passengers.length < 5) {
                 this.passengers.push(accts[counter++]);
@@ -47,6 +63,15 @@ export default class Contract {
         for (let i = 1; i < accts.length; i++) {
             let airlineAddress = accts[i];
             await this.flightSuretyApp.methods.registerAirline(airlineAddress, `Airline ${i}`).call({ from: accts[0] })
+        }
+    }
+
+    // register flights
+    async registerFlights() {
+        for (let i = 0; i < this.flights.length; i++) {
+            await this.flightSuretyApp.methods
+                .registerFlight(this.flights[i].airline, this.flights[i].flightNumber, this.flights[i].time)
+                .call({from: self.owner});
         }
     }
 
