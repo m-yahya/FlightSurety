@@ -128,6 +128,10 @@ contract FlightSuretyApp {
         // check if airline is registered
         bool isRegistered = flightSuretyData.isAirlineRegistered(msg.sender);
         require(isRegistered, 'Airline is not registered');
+
+        // check if airline has funds
+        bool isFunded = flightSuretyData.isAirlineFunded(msg.sender);
+        require(isFunded, 'Airline is not funded');
         //  get total number of registered airlines
         uint totalAirlines = flightSuretyData.getToalAirlines();
         // apply consensus
