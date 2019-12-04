@@ -96,29 +96,27 @@ contract('Flight Surety Tests', async (accounts) => {
         let airline1 = accounts[1]
         let airline2 = accounts[2]
         let airline3 = accounts[3]
-        let airline4 = accounts[4]
 
         let funds = 10000000000000000000;
 
         // ACT
-        await config.flightSuretyApp.fundAirline(airline1, { from: config.firstAirline, value: funds });
-        await config.flightSuretyApp.registerAirline(airline2, 'Airline 2', { from: config.firstAirline });
-        await config.flightSuretyApp.fundAirline(airline2, { from: config.firstAirline, value: funds });
-        await config.flightSuretyApp.registerAirline(airline3, 'Airline 3', { from: config.firstAirline });
-        await config.flightSuretyApp.fundAirline(airline3, { from: config.firstAirline, value: funds });
-        await config.flightSuretyApp.registerAirline(airline4, 'Airline 4', { from: config.firstAirline });
-        await config.flightSuretyApp.fundAirline(airline4, { from: config.firstAirline, value: funds });
+        await config.flightSuretyApp.fundAirline(config.firstAirline, { from: config.firstAirline, value: funds });
+        await config.flightSuretyApp.registerAirline(airline1, 'Airline 1', { from: config.firstAirline });
+        await config.flightSuretyApp.fundAirline(airline1, { from: airline1, value: funds });
+        await config.flightSuretyApp.registerAirline(airline2, 'Airline 2', { from: airline1 });
+        await config.flightSuretyApp.fundAirline(airline2, { from: airline2, value: funds });
+        await config.flightSuretyApp.registerAirline(airline3, 'Airline 3', { from: airline2 });
 
-        let registeredAirline1 = await config.flightSuretyData.isAirlineRegistered.call(config.firstAirline);
+        let registeredAirline0 = await config.flightSuretyData.isAirlineRegistered.call(config.firstAirline);
+        let registeredAirline1 = await config.flightSuretyData.isAirlineRegistered.call(airline1);
         let registeredAirline2 = await config.flightSuretyData.isAirlineRegistered.call(airline2);
         let registeredAirline3 = await config.flightSuretyData.isAirlineRegistered.call(airline3);
-        let registeredAirline4 = await config.flightSuretyData.isAirlineRegistered.call(airline4);
 
         // ASSERT
+        assert.equal(registeredAirline0, true, "airline0 registration failed");
         assert.equal(registeredAirline1, true, "airline1 registration failed");
         assert.equal(registeredAirline2, true, "airline2 registration failed");
         assert.equal(registeredAirline3, true, "airline3 registration failed");
-        assert.equal(registeredAirline4, true, "airline3 registration failed");
 
     })
 
@@ -126,6 +124,7 @@ contract('Flight Surety Tests', async (accounts) => {
     it('Registration of fifth and subsequent airlines requires multi-party consensus of 50% of registered airlines', async () => {
 
         // ARRANGE
+        let airline1 = accounts[1];
         let airline2 = accounts[2];
         let airline3 = accounts[3];
         let airline4 = accounts[4];
@@ -134,12 +133,15 @@ contract('Flight Surety Tests', async (accounts) => {
         let funds = 10000000000000000000;
 
         // ACT
-        await config.flightSuretyApp.registerAirline(airline5, 'Airline 5', { from: airline2 });
-        await config.flightSuretyApp.registerAirline(airline5, 'Airline 5', { from: airline3 });
-        await config.flightSuretyApp.fundAirline(airline5, { from: config.firstAirline, value: funds });
+        await config.flightSuretyApp.registerAirline(airline4, 'Airline 4', { from: airline1 });
+        await config.flightSuretyApp.registerAirline(airline4, 'Airline 4', { from: airline2 });
 
-        let registeredAirline2 = await config.flightSuretyData.isAirlineRegistered.call(airline2);
-        let registeredAirline3 = await config.flightSuretyData.isAirlineRegistered.call(airline3);
+        await config.flightSuretyApp.fundAirline(airline3, { from: airline3, value: funds });
+        await config.flightSuretyApp.registerAirline(airline5, 'Airline 5', { from: airline3 });
+        
+
+        let registeredAirline2 = await config.flightSuretyData.isAirlineRegistered.call(airline1);
+        let registeredAirline3 = await config.flightSuretyData.isAirlineRegistered.call(airline2);
         let registeredAirline4 = await config.flightSuretyData.isAirlineRegistered.call(airline4);
         let registeredAirline5 = await config.flightSuretyData.isAirlineRegistered.call(airline5);
 
@@ -147,8 +149,8 @@ contract('Flight Surety Tests', async (accounts) => {
         assert.equal(registeredAirline2, true, "airline2 registration failed");
         assert.equal(registeredAirline3, true, "airline3 registration failed");
         assert.equal(registeredAirline4, true, "airline4 registration failed");
-        assert.equal(registeredAirline5, true, "airline5 registration failed");
-        
+        assert.equal(registeredAirline5, false, "airline5 registration failed");
+
     });
 
 
