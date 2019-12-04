@@ -127,7 +127,11 @@ contract FlightSuretyApp {
     {
         // check if airline is registered
         bool isRegistered = flightSuretyData.isAirlineRegistered(msg.sender);
-        require(isRegistered, 'Airline is not registered');
+        require(isRegistered, 'Caller is not a registered airline');
+
+        // check is airline is already registered
+        isRegistered = flightSuretyData.isAirlineRegistered(airline);
+        require(!isRegistered, "Airline is already a registered airline");
 
         // check if airline has funds
         bool isFunded = flightSuretyData.isAirlineFunded(msg.sender);
