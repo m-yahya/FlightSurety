@@ -17,8 +17,9 @@ import './flightsurety.css';
                 value: result
             }]);
         });
-
+        populateSelect("flights", contract.flights, 1);
         populateSelect("flights", contract.flights, 2);
+        flightChange('flights', 1, contract.flights);
         flightChange('flights', 2, contract.flights);
 
         DOM.elid('flights2').addEventListener('change', () => {
@@ -39,6 +40,15 @@ import './flightsurety.css';
                 alert("Insurance Amount is required and should be a number greater than zero.");
             }
         });
+
+        // User-submitted transaction
+        DOM.elid('submit-oracle').addEventListener('click', () => {
+            let flight = DOM.elid('flights1').value;
+            // Write transaction
+            contract.fetchFlightStatus(flight, (error, result) => {
+                display('Oracles', 'Trigger oracles', [{ label: 'Fetch Flight Status', error: error, value: result.flight + ' ' + result.timestamp }]);
+            });
+        })
 
     });
 
@@ -84,7 +94,7 @@ function displayFlightInfo(num, flight) {
     section.appendChild(DOM.div({ className: 'col-sm-6 field' }, line1));
     section.appendChild(DOM.div({ className: 'col-sm-6 field' }, line2));
     section.appendChild(DOM.div({ className: 'col-sm-6 field' }, line3));
-    
+
     displayDiv.append(section);
 }
 
